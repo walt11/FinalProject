@@ -107,3 +107,4 @@ void MainWindow::on_edit_patient_clicked()
     // shows the newpatientwindow
     editPatient->show();
 }
+

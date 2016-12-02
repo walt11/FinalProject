@@ -41,17 +41,17 @@ class Dogs : MainWindow {
     private:
     public:
         string patient;
-        string owner;
-        string medication;
-        string treatment;
-        string food;
-        string food_amount;
-        string device;
-        bool own_food;
-        bool leash;
-        bool toys;
-        bool bed_blanket;
-        bool carrier;
+        string owner = " ";
+        string medication = " ";
+        string treatment = " ";
+        string food = " ";
+        string food_amount = " ";
+        string device = " ";
+        bool own_food = false;
+        bool leash = false;
+        bool toys = false;
+        bool bed_blanket = false;
+        bool carrier = false;
         void push();
         Dogs(){}
         void printPatient(){cout << patient << endl;}

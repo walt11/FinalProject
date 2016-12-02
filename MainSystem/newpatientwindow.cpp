@@ -52,7 +52,7 @@ int NewPatientWindow::pushInfo(string d){
         int lineNumber = atoi(d.c_str())*2;
         int count = 1;
         char line[20];
-        while (fgets(line, sizeof line, fp) != NULL){
+        while (fgets(line, sizeof(line), fp) != NULL){
             if (count == lineNumber){
                 ip_address = line;
                 break;
@@ -61,6 +61,11 @@ int NewPatientWindow::pushInfo(string d){
                 count++;
             }
         }
+        if(strcmp(ip_address, "0.0.0.0\n") == 0){
+            QMessageBox::information(this,"ERROR","No IP Address Found");
+            return -1;
+        }
+        cout << ip_address << endl;
     }
     fclose(fp);
 
@@ -107,12 +112,35 @@ void NewPatientWindow::on_push_clicked()
         return;
     }
 
+    char file_name[20];
+    if(ui->input_dog->isChecked()){
+        if(((atoi(ui->input_device->text().toStdString().c_str()))>10) | (atoi(ui->input_device->text().toStdString().c_str())<0)){
+            QMessageBox::information(this,"ERROR","For Dogs: Device must be from 1 to 10");
+            return;
+        }
+        sprintf(file_name,"Data/Dogs/dog_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
+    }else{
+        if((atoi(ui->input_device->text().toStdString().c_str())>20) | (atoi(ui->input_device->text().toStdString().c_str())<11)){
+            QMessageBox::information(this,"ERROR","For Cats: Device must be from 11 to 20");
+            return;
+        }
+        sprintf(file_name,"Data/Cats/cat_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
+    }
+
+
     // if the dog radio button is selected (for dogs)
     int dog;
     if(ui->input_dog->isChecked()){
-        // grab all the information from the user and store it is the correct object of the vector
-        Dogs *animal = new Dogs; // create a new Dog object
-        dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1] = animal; // assign the object to location in the vector
+        Dogs *animal = NULL;
+        // If there is no Object in the index in the vector, create a new object
+        if(dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1] == NULL){
+            cout << "creating new dog" << endl;
+            animal = new Dogs; // create a new Dog object
+            dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1] = animal; // assign the object to location in the vector
+        }else{
+            animal = dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1];
+        }
+        //dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1] = animal; // assign the object to location in the vector
         animal->patient = ui->input_patient->text().toStdString();              // patient name
         animal->owner = ui->input_owner->text().toStdString();                  // owner name
         animal->device = ui->input_device->text().toStdString();                // device number
@@ -127,11 +155,23 @@ void NewPatientWindow::on_push_clicked()
         animal->carrier = ui->carrier_checkbox->isChecked();                    // carrier
         dog = 1;
     }else{ // (for cats)
+        cout << "in cats" << endl;
+        Cats *animal = NULL;
+        // If there is no Object in the index in the vector, create a new object
+        if(cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11] == NULL){
+            cout << " *******creating new cat*********" << endl;
+            animal = new Cats; // create a new cat object
+            cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11] = animal; // assign the object to location in the vector
+        }else{
+            cout << "******** cat in that location exists ********" << endl;
+            animal = cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11];
+        }
+
         // grab all the information from the user and store it is the correct object of the vector
-        Cats *animal = new Cats; // create a new Cat object
+
         //cout << "cat created" << endl;
         //cout << atoi(ui->input_device->text().toStdString().c_str())-11 << endl;
-        cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11] = animal; // assign the object to location in the vector
+        //cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11] = animal; // assign the object to location in the vector
         //cout << "Success" << endl;
         animal->patient = ui->input_patient->text().toStdString();              // patient name
         animal->owner = ui->input_owner->text().toStdString();                  // owner name
@@ -149,60 +189,60 @@ void NewPatientWindow::on_push_clicked()
     }
 
     // the dogs devices go from 1 to 10 and the cats go from 11 to 20, so this checks to make sue the device inputted is correct based on animal type
-    char file_name[20];
-    if(dog == 1){
-        if(((atoi(ui->input_device->text().toStdString().c_str()))>10) | (atoi(ui->input_device->text().toStdString().c_str())<0)){
-            QMessageBox::information(this,"ERROR","For Dogs: Device must be from 1 to 10");
-            return;
-        }
-        sprintf(file_name,"Data/Dogs/dog_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
-    }else{
-        if((atoi(ui->input_device->text().toStdString().c_str())>20) | (atoi(ui->input_device->text().toStdString().c_str())<11)){
-            QMessageBox::information(this,"ERROR","For Cats: Device must be from 11 to 20");
-            return;
-        }
-        sprintf(file_name,"Data/Cats/cat_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
-    }
+    cout << "creating file" << endl;
 
-
+    cout << file_name << endl;
     // open the patients file and write all the inputted information to it
     FILE *file = fopen(file_name,"w");
     if(file == NULL){
         QMessageBox::information(this,"ERROR","Error opening file to write too");
     }
+    cout << "file opened" << endl;
     // for a dog
     if(dog == 1){
+        cout << "writing dog to file" << endl;
         fprintf(file,"%s\n",dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1]->patient.c_str());
+        cout << "owner" << endl;
         fprintf(file,"%s\n",dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1]->owner.c_str());
+        cout << "meds" << endl;
         fprintf(file,"%s\n",dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1]->medication.c_str());
+        cout << "treatment" << endl;
         fprintf(file,"%s\n",dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1]->treatment.c_str());
+        cout << "food" << endl;
         fprintf(file,"%s\n",dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1]->food.c_str());
+
         if(dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1]->own_food){
             fprintf(file,"1\n");
         }else{
             fprintf(file,"0\n");
         }
+        cout << "food amount" << endl;
         fprintf(file,"%s\n",dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1]->food_amount.c_str());
+        cout << "leash" << endl;
         if(dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1]->leash){
             fprintf(file,"1\n");
         }else{
             fprintf(file,"0\n");
         }
+        cout << "toys" << endl;
         if(dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1]->toys){
             fprintf(file,"1\n");
         }else{
             fprintf(file,"0\n");
         }
+        cout << "bed" << endl;
         if(dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1]->bed_blanket){
             fprintf(file,"1\n");
         }else{
             fprintf(file,"0\n");
         }
-        if(dog_vec[atoi(ui->input_device->text().toStdString().c_str()-1)]->carrier){
+        cout << "carrier" << endl;
+        if(dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1]->carrier){
             fprintf(file,"1\n");
         }else{
             fprintf(file,"0\n");
         }
+        cout << "dog done" << endl;
         // for a cat
     }else{
         fprintf(file,"%s\n",cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11]->patient.c_str());
@@ -231,13 +271,14 @@ void NewPatientWindow::on_push_clicked()
         }else{
             fprintf(file,"0\n");
         }
-        if(dog_vec[atoi(ui->input_device->text().toStdString().c_str()-11)]->carrier){
+        if(dog_vec[atoi(ui->input_device->text().toStdString().c_str())-11]->carrier){
             fprintf(file,"1\n");
         }else{
             fprintf(file,"0\n");
         }
     }
     fclose(file);
+    cout << "file closed" << endl;
 
 
     // below copies the file to a different name in order to be pushed to the device
