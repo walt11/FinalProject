@@ -25,15 +25,15 @@ int main(int argc, char *argv[])
         dog_vec[i] = animal;
         ifstream file(file_name);
         if (!file){
-            cout << file_name << " not found" << endl;
+            //cout << file_name << " not found" << endl;
             dog_vec[i] = NULL;
          }else{
           // read in all of the patient information
-            cout << file_name << " found" << endl;
+            //cout << file_name << " found" << endl;
             getline(file,animal->patient);
-            cout << animal->patient << endl;
-            cout << dog_vec[i]->patient << endl;
-            cout << "Patient read in" << endl;
+            //cout << animal->patient << endl;
+            //cout << dog_vec[i]->patient << endl;
+            //cout << "Patient read in" << endl;
             getline(file,animal->owner);
             getline(file,animal->medication);
             getline(file,animal->treatment);
@@ -65,15 +65,15 @@ int main(int argc, char *argv[])
         cat_vec[i] = animal;
         ifstream file(file_name);
         if (!file){
-            cout << file_name << " not found" << endl;
+            //cout << file_name << " not found" << endl;
             cat_vec[i] = NULL;
          }else{
           // read in all of the patient information
-            cout << file_name << " found" << endl;
+            //cout << file_name << " found" << endl;
             getline(file,animal->patient);
-            cout << animal->patient << endl;
-            cout << cat_vec[i]->patient << endl;
-            cout << "Patient read in" << endl;
+            //cout << animal->patient << endl;
+            //cout << cat_vec[i]->patient << endl;
+            //cout << "Patient read in" << endl;
             getline(file,animal->owner);
             getline(file,animal->medication);
             getline(file,animal->treatment);
