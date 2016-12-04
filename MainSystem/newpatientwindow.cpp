@@ -27,7 +27,85 @@ NewPatientWindow::NewPatientWindow(QWidget *parent, QString device) : QWidget(pa
 {
     ui->setupUi(this);
     //cout << "New patient window clicked" << endl;
-    ui->input_device->setText(device);
+       ui->input_device->setText(device);
+       if(atoi(device.toStdString().c_str()) < 11){//is a dog
+           cout << atoi((device).toStdString().c_str()) << endl;
+           if(dog_vec[atoi((device).toStdString().c_str())-1] == NULL){
+               cout << "Device not found" << endl;
+               return;
+           }
+           Dogs *animal = dog_vec[atoi(device.toStdString().c_str())-1];    // assign the object to location in the vector
+           ui->input_dog->setChecked(true);
+           ui->input_patient->setText(animal->patient.c_str());                     // patient name
+           ui->input_owner->setText(animal->owner.c_str());                  // owner name
+                           // device number
+           ui->input_medication->appendPlainText(animal->medication.c_str()); // medications
+           ui->input_treatment->appendPlainText(animal->treatment.c_str());   // treatment
+           if(animal->own_food == true){
+               ui->food_checkbox->setChecked(1);
+           }else{
+               ui->food_checkbox->setChecked(0);
+           }
+           ui->input_food->setText(animal->food.c_str());                    // food name
+                              // own food
+           ui->input_food_amount->setText(animal->food_amount.c_str());      // food amount
+           if(animal->leash == true)                                        // leash
+               ui->leash_checkbox->setChecked(1);
+           else
+               ui->leash_checkbox->setChecked(0);
+           if(animal->toys == true)                                        // toys
+               ui->toys_checkbox->setChecked(1);
+           else
+               ui->toys_checkbox->setChecked(0);
+           if(animal->bed_blanket == true)                                        // bed_blanket
+               ui->bed_blanket_checkbox->setChecked(1);
+           else
+               ui->bed_blanket_checkbox->setChecked(0);
+           if(animal->carrier == true)                                        // carrier
+               ui->carrier_checkbox->setChecked(1);
+           else
+               ui->carrier_checkbox->setChecked(0);
+       }
+       else{
+           if(cat_vec[atoi((device).toStdString().c_str())-11] == NULL){
+               cout << "Device not found" << endl;
+               return;
+           }
+           Cats *animal = cat_vec[atoi(device.toStdString().c_str())-11];    // assign the object to location in the vector
+           ui->input_cat->setChecked(true);
+           ui->input_patient->setText(animal->patient.c_str());                     // patient name
+           ui->input_owner->setText(animal->owner.c_str());                  // owner name
+                           // device number
+           ui->input_medication->appendPlainText(animal->medication.c_str()); // medications
+           ui->input_treatment->appendPlainText(animal->treatment.c_str());   // treatment
+           if(animal->own_food == true){
+               ui->food_checkbox->setChecked(1);
+           }else{
+               ui->food_checkbox->setChecked(0);
+           }
+           ui->input_food->setText(animal->food.c_str());                    // food name
+                              // own food
+           ui->input_food_amount->setText(animal->food_amount.c_str());      // food amount
+           if(animal->leash == true)                                        // leash
+               ui->leash_checkbox->setChecked(1);
+           else
+               ui->leash_checkbox->setChecked(0);
+           if(animal->toys == true)                                        // toys
+               ui->toys_checkbox->setChecked(1);
+           else
+               ui->toys_checkbox->setChecked(0);
+           if(animal->bed_blanket == true)                                        // bed_blanket
+               ui->bed_blanket_checkbox->setChecked(1);
+           else
+               ui->bed_blanket_checkbox->setChecked(0);
+           if(animal->carrier == true)                                        // carrier
+               ui->carrier_checkbox->setChecked(1);
+           else
+               ui->carrier_checkbox->setChecked(0);
+       }
+
+
+
 }
 
 
@@ -115,37 +193,48 @@ int NewPatientWindow::pushInfo(string d,char *file_name){
 // method that runs when the Push button is clicked
 void NewPatientWindow::on_push_clicked()
 {
+
     // checks to make sure the main fields are filled out
+    try{
     if(ui->input_patient->text().toStdString().empty()){
-        QMessageBox::information(this,"ERROR","Patient Required"); // error message window
-        return;
+        throw(-1);
     }
     if(ui->input_owner->text().toStdString().empty()){
-        QMessageBox::information(this,"ERROR","Owner Required"); // error message window
-        return;
+        throw(-1);
     }
     if(ui->input_treatment->toPlainText().toStdString().empty()){
-        QMessageBox::information(this,"ERROR","Treatment Required"); // error message window
+       throw(-1);
+    }
+    }
+    catch(int){
+        QMessageBox::information(this,"ERROR","Patient,Owner, Treatment, and Device\nFields Required");
         return;
     }
 
     char file_name[20];
+    try{
     if(ui->input_dog->isChecked()){
-        if(((atoi(ui->input_device->text().toStdString().c_str()))>10) | (atoi(ui->input_device->text().toStdString().c_str())<0)){
-            QMessageBox::information(this,"ERROR","For Dogs: Device must be from 1 to 10");
-            return;
-        }
-        loadNew_dog();
-        sprintf(file_name,"Data/Dogs/dog_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
-        writeDogToFile(file_name);
+            int devicenum = atoi(ui->input_device->text().toStdString().c_str());//convert string to int to get device num
+            if(devicenum > 10 || devicenum < 1)//invalid device num for dogs
+                throw(devicenum);//throw in
+            loadNew_dog();
+            sprintf(file_name,"Data/Dogs/dog_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
+            writeDogToFile(file_name);
+
     }else{
-        if((atoi(ui->input_device->text().toStdString().c_str())>20) | (atoi(ui->input_device->text().toStdString().c_str())<11)){
-            QMessageBox::information(this,"ERROR","For Cats: Device must be from 11 to 20");
-            return;
-        }
+
+           int devicenum = atoi(ui->input_device->text().toStdString().c_str());
+           if(devicenum > 20 || devicenum < 11)
+                throw(devicenum);
+
         sprintf(file_name,"Data/Cats/cat_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
         loadNew_cat();
         writeCatToFile(file_name);
+    }
+    }
+    catch(int){
+        QMessageBox::information(this,"ERROR","Dogs must go from 1 to 10\nCats must go from 11 to 20");
+            return;
     }
 
 

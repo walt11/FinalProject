@@ -54,7 +54,8 @@ class Dogs : MainWindow {
         bool carrier = false;
         void push();
         Dogs(){}
-        void printPatient(){cout << patient << endl;}
+        ~Dogs(){}
+
 };
 
 // Cat Class
@@ -75,7 +76,8 @@ class Cats : MainWindow{
         bool bed_blanket;
         void push();
         Cats(){}
-        void printPatient(){cout << patient << endl;}
+        ~Cats(){}
+
 };
 
 #endif // MAINWINDOW_H

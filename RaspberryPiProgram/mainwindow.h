@@ -42,6 +42,7 @@ private:
     string leash;
     string toys;
     string bed;
+    string carrier;
 
     QFileSystemWatcher *file_watch;
 

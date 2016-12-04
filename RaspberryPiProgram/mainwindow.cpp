@@ -17,6 +17,26 @@ using namespace std;
 // Main window constructor
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow){
     ui->setupUi(this); // setup the window
+    ui->pushButton->setStyleSheet("QPushButton {color : white}");
+    string ip = "";
+      FILE *fp;
+      char file_type[40];
+
+      fp = popen("ifconfig", "r");
+      if (fp == NULL) {
+          printf("Failed to run command\n" );
+      }else{
+
+      while (fgets(file_type, sizeof(file_type), fp) != NULL) {
+
+          ip = ip + string(file_type);
+      }
+      }
+
+
+
+    ui->textBrowser->setStyleSheet("QTextBrowser {color : white}");
+    ui->textBrowser->setText(ip.c_str());
 
     // These hide all of the objects on the main window so only the Activate button is shown
     ui->patient_label->setVisible(false);
@@ -64,9 +84,7 @@ void MainWindow::fileChanged(const QString &)
   ifstream file("/home/pi/to_push.txt");
 
   // open the file that was pushed
-  if (!file){
-      QMessageBox::information(this,"ERROR","Error opening file");
-   }else{
+  if (file){
    	// read in all of the patient information
       getline(file,patient);
       getline(file,owner);
@@ -78,6 +96,7 @@ void MainWindow::fileChanged(const QString &)
       getline(file,leash);
       getline(file,toys);
       getline(file,bed);
+      getline(file,carrier);
 
       if(atoi(own_food.c_str()) == 1){
           belongings = belongings+"Food, ";
@@ -91,6 +110,10 @@ void MainWindow::fileChanged(const QString &)
       if(atoi(bed.c_str()) == 1){
           belongings = belongings+"Bed/Blanket, ";
       }
+      if(atoi(carrier.c_str()) == 1){
+          belongings = belongings+"Carrier, ";
+      }
+      belongings.erase(belongings.end()-2);
 
       // Sets the labels on the screen to display the patient information
       ui->patient_label->setText(patient.c_str());
@@ -124,13 +147,11 @@ void MainWindow::on_pushButton_clicked()
     ui->label_6->setVisible(true);
 
     ui->pushButton->setVisible(false); // hide the activate button
+    ui->textBrowser->setVisible(false);
 
     // read in the file that was pushed
     ifstream file("/home/pi/to_push.txt");
-    if (!file){
-        QMessageBox::information(this,"ERROR","Error opening file");
-     }else{
-     	// read in all of the contents
+    if (file){
         getline(file,patient);
         getline(file,owner);
         getline(file,medications);
@@ -141,6 +162,7 @@ void MainWindow::on_pushButton_clicked()
         getline(file,leash);
         getline(file,toys);
         getline(file,bed);
+        getline(file,carrier);
 
         if(atoi(own_food.c_str()) == 1){
             belongings = belongings+"Food, ";
@@ -154,6 +176,10 @@ void MainWindow::on_pushButton_clicked()
         if(atoi(bed.c_str()) == 1){
             belongings = belongings+"Bed/Blanket, ";
         }
+        if(atoi(carrier.c_str()) == 1){
+            belongings = belongings+"Carrier, ";
+        }
+        belongings.erase(belongings.end()-2);
     //cout << "File read in" << endl;
     //cout << "Popped" << endl;
 
