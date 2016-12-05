@@ -4,9 +4,24 @@
 #include "newpatientwindow.h"
 #include <QApplication>
 #include <vector>
+#include <windows.h>
 
 vector<Dogs*> dog_vec(10);
 vector<Cats*> cat_vec(10);
+
+//MainWindow w;
+
+bool dirExists(const std::string& dirName_in)
+{
+  DWORD ftyp = GetFileAttributesA(dirName_in.c_str());
+  if (ftyp == INVALID_FILE_ATTRIBUTES)
+    return false;  //something is wrong with your path!
+
+  if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+    return true;   // this is a directory!
+
+  return false;    // this is not a directory!
+}
 
 int main(int argc, char *argv[])
 {
@@ -14,7 +29,23 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     // Create a mainwindow object
     MainWindow w;
-    // display the main window
+
+    // builds the database if not found
+    if(!dirExists("Data")){
+        cout << "Making directory" << endl;
+        system("mkdir Data");
+        system("mkdir Data\\Dogs");
+        system("mkdir Data\\Cats");
+    }else{
+        cout << "Creating Dogs directory" << endl;
+        if(!dirExists("Data\\Dogs")){
+           system("mkdir Data\\Dogs");
+        }
+        cout << "Creating Dats directory" << endl;
+        if(!dirExists("Data\\Cats")){
+            system("mkdir Data\\Cats");
+        }
+    }
 
     // load all of the dogs into memory
     string x;
@@ -100,6 +131,5 @@ int main(int argc, char *argv[])
 
 
     w.show();
-
     return a.exec();
 }

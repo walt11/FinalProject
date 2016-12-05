@@ -10,19 +10,17 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
+
 using namespace std;
 
 // MainWindow constructor - default by Qt
 // creates a main window object UI
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) :  QMainWindow(parent),  ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
     // calls updateDisplay to update the patients displayed on the mainwindow
     updateDisplay();
-
 }
 
 // method to update the display
@@ -78,6 +76,7 @@ void MainWindow::updateDisplay(){
 // main window destructor
 MainWindow::~MainWindow()
 {
+    cout << "Deleting ui" << endl;
     delete ui;
 }
 
@@ -102,6 +101,28 @@ void MainWindow::on_update_clicked()
 // method called when the edit patient button is clicked
 void MainWindow::on_edit_patient_clicked()
 {
+    char file_name[30];
+    cout << atoi(ui->lineEdit->text().toStdString().c_str()) << endl;
+    try{
+        if(atoi(ui->lineEdit->text().toStdString().c_str()) < 11){
+            sprintf(file_name,"Data/Dogs/dog_%d.txt",atoi(ui->lineEdit->text().toStdString().c_str()));
+            ifstream file(file_name);
+            if (!file){
+                throw("Patient not found");
+            }
+        }else{
+            //cout << "In cat" << endl;
+            sprintf(file_name,"Data/Cats/cat_%d.txt",atoi(ui->lineEdit->text().toStdString().c_str()));
+            ifstream file(file_name);
+            if (!file){
+                throw("Patient not found");
+             }
+        }
+     }catch(...){
+        QMessageBox::information(this,"ERROR","The device you selected\ndoes NOT have a patient");
+        return;
+     }
+
     // creates a new object the the newpatientwindow and will insert the current information into that window when completed
     NewPatientWindow *editPatient = new NewPatientWindow(0,ui->lineEdit->text());
     // shows the newpatientwindow

@@ -23,8 +23,8 @@ public:
     explicit NewPatientWindow(QWidget *parent, QString device); // constructor for a current patient to be edited
     int pushInfo(string,char *);
     ~NewPatientWindow();
-    void loadNew_dog();
-    void loadNew_cat();
+    int loadNew_dog();
+    int loadNew_cat();
     void writeDogToFile(char*);
     void writeCatToFile(char*);
 

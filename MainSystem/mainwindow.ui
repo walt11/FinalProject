@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1216</width>
-    <height>560</height>
+    <width>1224</width>
+    <height>617</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,6 +31,13 @@
       </property>
      </widget>
     </item>
+    <item row="5" column="4">
+     <widget class="QPushButton" name="edit_patient">
+      <property name="text">
+       <string>Edit Patient</string>
+      </property>
+     </widget>
+    </item>
     <item row="4" column="0" colspan="3">
      <widget class="QTextBrowser" name="dog_textbrowser">
       <property name="minimumSize">
@@ -44,13 +51,6 @@
         <width>600</width>
         <height>400</height>
        </size>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="4">
-     <widget class="QPushButton" name="edit_patient">
-      <property name="text">
-       <string>Edit Patient</string>
       </property>
      </widget>
     </item>
@@ -79,29 +79,21 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="3">
-     <widget class="QLabel" name="label_3">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>25</height>
-       </size>
-      </property>
+    <item row="5" column="1" alignment="Qt::AlignLeft">
+     <widget class="QLineEdit" name="lineEdit">
       <property name="maximumSize">
        <size>
-        <width>16777215</width>
-        <height>25</height>
+        <width>50</width>
+        <height>16777215</height>
        </size>
       </property>
-      <property name="text">
-       <string>Cats:</string>
+      <property name="font">
+       <font>
+        <pointsize>14</pointsize>
+       </font>
       </property>
-     </widget>
-    </item>
-    <item row="3" column="4">
-     <widget class="QPushButton" name="update">
       <property name="text">
-       <string>Update</string>
+       <string>1</string>
       </property>
      </widget>
     </item>
@@ -150,21 +142,29 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="1" alignment="Qt::AlignLeft">
-     <widget class="QLineEdit" name="lineEdit">
-      <property name="maximumSize">
+    <item row="3" column="3">
+     <widget class="QLabel" name="label_3">
+      <property name="minimumSize">
        <size>
-        <width>50</width>
-        <height>16777215</height>
+        <width>0</width>
+        <height>25</height>
        </size>
       </property>
-      <property name="font">
-       <font>
-        <pointsize>14</pointsize>
-       </font>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>25</height>
+       </size>
       </property>
       <property name="text">
-       <string>1</string>
+       <string>Cats:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="4">
+     <widget class="QPushButton" name="update">
+      <property name="text">
+       <string>Update</string>
       </property>
      </widget>
     </item>

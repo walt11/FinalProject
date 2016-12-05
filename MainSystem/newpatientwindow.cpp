@@ -213,42 +213,33 @@ void NewPatientWindow::on_push_clicked()
 
     char file_name[20];
     try{
-    if(ui->input_dog->isChecked()){
+       if(ui->input_dog->isChecked()){
             int devicenum = atoi(ui->input_device->text().toStdString().c_str());//convert string to int to get device num
             if(devicenum > 10 || devicenum < 1)//invalid device num for dogs
                 throw(devicenum);//throw in
-            loadNew_dog();
+            if(loadNew_dog() == -1){
+                return;
+            }
             sprintf(file_name,"Data/Dogs/dog_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
             writeDogToFile(file_name);
 
-    }else{
+        }else{
 
            int devicenum = atoi(ui->input_device->text().toStdString().c_str());
            if(devicenum > 20 || devicenum < 11)
                 throw(devicenum);
 
-        sprintf(file_name,"Data/Cats/cat_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
-        loadNew_cat();
-        writeCatToFile(file_name);
-    }
+         sprintf(file_name,"Data/Cats/cat_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
+         if(loadNew_cat() == -1){
+             return;
+         }
+         writeCatToFile(file_name);
+        }
     }
     catch(int){
         QMessageBox::information(this,"ERROR","Dogs must go from 1 to 10\nCats must go from 11 to 20");
             return;
     }
-
-
-    // if the dog radio button is selected (for dogs)
-
-    // the dogs devices go from 1 to 10 and the cats go from 11 to 20, so this checks to make sue the device inputted is correct based on animal type
-    //cout << "creating file" << endl;
-
-    //cout << file_name << endl;
-    // open the patients file and write all the inputted information to it
-
-    // below copies the file to a different name in order to be pushed to the device
-
-
 
     // tries to push the file to the device
     if(pushInfo(ui->input_device->text().toStdString(),file_name) == -1){
@@ -259,7 +250,7 @@ void NewPatientWindow::on_push_clicked()
     }
 }
 
-void NewPatientWindow::loadNew_dog(){
+int NewPatientWindow::loadNew_dog(){
     Dogs *animal = NULL;
     // If there is no Object in the index in the vector, create a new object
     if(dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1] == NULL){
@@ -267,7 +258,10 @@ void NewPatientWindow::loadNew_dog(){
         animal = new Dogs; // create a new Dog object
         dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1] = animal; // assign the object to location in the vector
     }else{
-        animal = dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1];
+        // There is already a patient associated to that device
+        QMessageBox::information(this,"ERROR","There is a patient in that kennel\nPlease choose another");
+        return -1;
+        //animal = dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1];
     }
     //dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1] = animal; // assign the object to location in the vector
     animal->patient = ui->input_patient->text().toStdString();              // patient name
@@ -282,8 +276,9 @@ void NewPatientWindow::loadNew_dog(){
     animal->toys = ui->toys_checkbox->isChecked();                          // toys
     animal->bed_blanket = ui->bed_blanket_checkbox->isChecked();            // bed/blanket
     animal->carrier = ui->carrier_checkbox->isChecked();                    // carrier
+    return 0;
 }
-void NewPatientWindow::loadNew_cat(){
+int NewPatientWindow::loadNew_cat(){
     //cout << "in cats" << endl;
     Cats *animal = NULL;
     // If there is no Object in the index in the vector, create a new object
@@ -292,8 +287,10 @@ void NewPatientWindow::loadNew_cat(){
         animal = new Cats; // create a new cat object
         cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11] = animal; // assign the object to location in the vector
     }else{
+        QMessageBox::information(this,"ERROR","There is a patient in that kennel\nPlease choose another");
+        return -1;
         //cout << "******** cat in that location exists ********" << endl;
-        animal = cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11];
+        //animal = cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11];
     }
 
     // grab all the information from the user and store it is the correct object of the vector
@@ -314,6 +311,7 @@ void NewPatientWindow::loadNew_cat(){
     animal->toys = ui->toys_checkbox->isChecked();                          // toys
     animal->bed_blanket = ui->bed_blanket_checkbox->isChecked();            // bed/blanket
     animal->carrier = ui->carrier_checkbox->isChecked();                    // carrier
+    return 0;
 }
 
 void NewPatientWindow::writeDogToFile(char *file_name){
@@ -411,5 +409,6 @@ void NewPatientWindow::writeCatToFile(char *file_name){
     }
     fclose(file);
 }
+
 
 
