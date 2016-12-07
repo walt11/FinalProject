@@ -15,42 +15,10 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="4" column="3" colspan="2">
-     <widget class="QTextBrowser" name="cat_textbrowser">
-      <property name="minimumSize">
-       <size>
-        <width>600</width>
-        <height>400</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>600</width>
-        <height>400</height>
-       </size>
-      </property>
-     </widget>
-    </item>
     <item row="5" column="4">
      <widget class="QPushButton" name="edit_patient">
       <property name="text">
        <string>Edit Patient</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0" colspan="3">
-     <widget class="QTextBrowser" name="dog_textbrowser">
-      <property name="minimumSize">
-       <size>
-        <width>600</width>
-        <height>400</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>600</width>
-        <height>400</height>
-       </size>
       </property>
      </widget>
     </item>
@@ -72,10 +40,35 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="3">
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>New Patient</string>
+    <item row="4" column="0" colspan="3">
+     <widget class="QTextBrowser" name="dog_textbrowser">
+      <property name="minimumSize">
+       <size>
+        <width>600</width>
+        <height>400</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>600</width>
+        <height>400</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="3" colspan="2">
+     <widget class="QTextBrowser" name="cat_textbrowser">
+      <property name="minimumSize">
+       <size>
+        <width>600</width>
+        <height>400</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>600</width>
+        <height>400</height>
+       </size>
       </property>
      </widget>
     </item>
@@ -94,6 +87,32 @@
       </property>
       <property name="text">
        <string>1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="3">
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>New Patient</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Dogs:</string>
       </property>
      </widget>
     </item>
@@ -123,22 +142,10 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>30</height>
-       </size>
-      </property>
+    <item row="3" column="4">
+     <widget class="QPushButton" name="update">
       <property name="text">
-       <string>Dogs:</string>
+       <string>Update</string>
       </property>
      </widget>
     </item>
@@ -161,10 +168,10 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="4">
-     <widget class="QPushButton" name="update">
+    <item row="6" column="4">
+     <widget class="QPushButton" name="delete_patient">
       <property name="text">
-       <string>Update</string>
+       <string>Delete</string>
       </property>
      </widget>
     </item>

@@ -251,6 +251,7 @@ void NewPatientWindow::on_push_clicked()
 }
 
 int NewPatientWindow::loadNew_dog(){
+    char file_name[30];
     Dogs *animal = NULL;
     // If there is no Object in the index in the vector, create a new object
     if(dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1] == NULL){
@@ -258,10 +259,23 @@ int NewPatientWindow::loadNew_dog(){
         animal = new Dogs; // create a new Dog object
         dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1] = animal; // assign the object to location in the vector
     }else{
-        // There is already a patient associated to that device
-        QMessageBox::information(this,"ERROR","There is a patient in that kennel\nPlease choose another");
-        return -1;
-        //animal = dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1];
+        sprintf(file_name,"Data/Dogs/dog_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
+        ifstream ifile(file_name);
+
+        // when a patient is deleted in mainwindow, it only deletes the file and not the object in the vector - below checks to see if the patients file
+        // has been deleted or not
+        // if it has, then animal just set to point to the current object that already exists to change the values in it
+        // if it hasn't, then an error is displayed because that device is still assigned a patient
+        if (!ifile) {
+            ifile.close();
+            cout << "file not found but patient associated to device" << endl;
+            animal = dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1];
+        }else{
+            // There is already a patient associated to that device
+            QMessageBox::information(this,"ERROR","There is a patient in that kennel\nPlease choose another");
+            return -1;
+            //animal = dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1];
+        }
     }
     //dog_vec[atoi(ui->input_device->text().toStdString().c_str())-1] = animal; // assign the object to location in the vector
     animal->patient = ui->input_patient->text().toStdString();              // patient name
@@ -279,6 +293,7 @@ int NewPatientWindow::loadNew_dog(){
     return 0;
 }
 int NewPatientWindow::loadNew_cat(){
+    char file_name[30];
     //cout << "in cats" << endl;
     Cats *animal = NULL;
     // If there is no Object in the index in the vector, create a new object
@@ -286,11 +301,24 @@ int NewPatientWindow::loadNew_cat(){
         //cout << " *******creating new cat*********" << endl;
         animal = new Cats; // create a new cat object
         cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11] = animal; // assign the object to location in the vector
-    }else{
-        QMessageBox::information(this,"ERROR","There is a patient in that kennel\nPlease choose another");
-        return -1;
-        //cout << "******** cat in that location exists ********" << endl;
-        //animal = cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11];
+    }else{ // if there is already a patient object in that index
+        sprintf(file_name,"Data/Cats/cat_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
+
+        // when a patient is deleted in mainwindow, it only deletes the file and not the object in the vector - below checks to see if the patients file
+        // has been deleted or not
+        // if it has, then animal just set to point to the current object that already exists to change the values in it
+        // if it hasn't, then an error is displayed because that device is still assigned a patient
+        ifstream ifile(file_name);
+        if (!ifile) {
+            ifile.close();
+            cout << "file not found but patient associated to device" << endl;
+            animal = cat_vec[atoi(ui->input_device->text().toStdString().c_str())-1];
+        }else{
+            QMessageBox::information(this,"ERROR","There is a patient in that kennel\nPlease choose another");
+            return -1;
+            //cout << "******** cat in that location exists ********" << endl;
+            //animal = cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11];
+        }
     }
 
     // grab all the information from the user and store it is the correct object of the vector

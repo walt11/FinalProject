@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :  QMainWindow(parent),  ui(new Ui::Main
 
 // method to update the display
 void MainWindow::updateDisplay(){
+    ui->dog_textbrowser->clear();
+    ui->cat_textbrowser->clear();
     int i;
     char file_name[20];
     char pat[30];
@@ -129,3 +131,28 @@ void MainWindow::on_edit_patient_clicked()
     editPatient->show();
 }
 
+
+void MainWindow::on_delete_patient_clicked()
+{
+    char file_name[30];
+    char command[30];
+    if(atoi(ui->lineEdit->text().toStdString().c_str())<11){
+        sprintf(file_name,"Data\\Dogs\\dog_%d.txt",atoi(ui->lineEdit->text().toStdString().c_str()));
+    }else{
+        sprintf(file_name,"Data\\Cats\\cat_%d.txt",atoi(ui->lineEdit->text().toStdString().c_str()));
+    }
+    ifstream ifile(file_name);
+    if (ifile) {
+        ifile.close();
+        //sprintf(command,"del /f %s",file_name);
+        //system(command);
+        if(remove(file_name) == 0){
+            QMessageBox::information(this,"SUCCESS","Patient Deleted");
+            updateDisplay();
+        }else{
+            QMessageBox::information(this,"ERROR","Error deleting patient");
+        }
+    }else{
+        QMessageBox::information(this,"ERROR","Delete Unsuccessful\nPatient not found");
+    }
+}
