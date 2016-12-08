@@ -25,8 +25,6 @@ MainWindow::MainWindow(QWidget *parent) :  QMainWindow(parent),  ui(new Ui::Main
 
 // method to update the display
 void MainWindow::updateDisplay(){
-    ui->dog_textbrowser->clear();
-    ui->cat_textbrowser->clear();
     int i;
     char file_name[20];
     char pat[30];
@@ -78,7 +76,6 @@ void MainWindow::updateDisplay(){
 // main window destructor
 MainWindow::~MainWindow()
 {
-    cout << "Deleting ui" << endl;
     delete ui;
 }
 
@@ -105,22 +102,25 @@ void MainWindow::on_edit_patient_clicked()
 {
     char file_name[30];
     cout << atoi(ui->lineEdit->text().toStdString().c_str()) << endl;
+    // exception handling
     try{
         if(atoi(ui->lineEdit->text().toStdString().c_str()) < 11){
+            // look for the dog selected
             sprintf(file_name,"Data/Dogs/dog_%d.txt",atoi(ui->lineEdit->text().toStdString().c_str()));
             ifstream file(file_name);
-            if (!file){
+            if (!file){ // if the dog is not found (patient does not exist) throw an error
                 throw("Patient not found");
             }
         }else{
-            //cout << "In cat" << endl;
+            // look for the cat selected
             sprintf(file_name,"Data/Cats/cat_%d.txt",atoi(ui->lineEdit->text().toStdString().c_str()));
             ifstream file(file_name);
-            if (!file){
+            if (!file){ // if the cat is not found (patient does not exist) throw an error
                 throw("Patient not found");
              }
         }
-     }catch(...){
+     }catch(...){ // catch the errors thrown from above
+        // display an error message
         QMessageBox::information(this,"ERROR","The device you selected\ndoes NOT have a patient");
         return;
      }
@@ -132,27 +132,31 @@ void MainWindow::on_edit_patient_clicked()
 }
 
 
+// Method to delete a patient
 void MainWindow::on_delete_patient_clicked()
 {
     char file_name[30];
-    char command[30];
+    // form the file name for the patient
     if(atoi(ui->lineEdit->text().toStdString().c_str())<11){
         sprintf(file_name,"Data\\Dogs\\dog_%d.txt",atoi(ui->lineEdit->text().toStdString().c_str()));
     }else{
         sprintf(file_name,"Data\\Cats\\cat_%d.txt",atoi(ui->lineEdit->text().toStdString().c_str()));
     }
+    // look to see if the patient file exists
     ifstream ifile(file_name);
-    if (ifile) {
-        ifile.close();
-        //sprintf(command,"del /f %s",file_name);
-        //system(command);
-        if(remove(file_name) == 0){
+    if (ifile) {                    // if file found
+        ifile.close();              // first close the file
+        if(remove(file_name) == 0){ // try to delete the file
             QMessageBox::information(this,"SUCCESS","Patient Deleted");
-            updateDisplay();
+            ui->dog_textbrowser->clear();
+            ui->cat_textbrowser->clear();
+            updateDisplay();        // update the MainWindow to show that the patient has been removed
         }else{
             QMessageBox::information(this,"ERROR","Error deleting patient");
         }
     }else{
         QMessageBox::information(this,"ERROR","Delete Unsuccessful\nPatient not found");
     }
+    // IMPORTANT - this only deletes the patients file, meaning that the patients object is still in the vector - this object is then handeled
+    // when a new patient is being added by simply overwritting the previous patients information with the new patients info
 }

@@ -19,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this); // setup the window
     ui->pushButton->setStyleSheet("QPushButton {color : white}");
     string ip = "";
+	
+	// below uses popen to run the system command "ifconfig" which gathers network information and stores the results into a string
       FILE *fp;
       char file_type[40];
 
@@ -27,16 +29,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
           printf("Failed to run command\n" );
       }else{
 
-      while (fgets(file_type, sizeof(file_type), fp) != NULL) {
-
+		while (fgets(file_type, sizeof(file_type), fp) != NULL) {
           ip = ip + string(file_type);
-      }
-      }
+		}
+     }
 
 
 
     ui->textBrowser->setStyleSheet("QTextBrowser {color : white}");
-    ui->textBrowser->setText(ip.c_str());
+    ui->textBrowser->setText(ip.c_str()); // displays the network details to the start screen
 
     // These hide all of the objects on the main window so only the Activate button is shown
     ui->patient_label->setVisible(false);
@@ -84,7 +85,9 @@ void MainWindow::fileChanged(const QString &)
   ifstream file("/home/pi/to_push.txt");
 
   // open the file that was pushed
-  if (file){
+  if (!file){
+      QMessageBox::information(this,"ERROR","Error opening file");
+   }else{
    	// read in all of the patient information
       getline(file,patient);
       getline(file,owner);
@@ -111,9 +114,11 @@ void MainWindow::fileChanged(const QString &)
           belongings = belongings+"Bed/Blanket, ";
       }
       if(atoi(carrier.c_str()) == 1){
-          belongings = belongings+"Carrier, ";
+          belongings = belongings+"Carrier";
       }
-      belongings.erase(belongings.end()-2);
+      if(belongings.length() > 2){
+          belongings.erase(belongings.end()-2);
+      }
 
       // Sets the labels on the screen to display the patient information
       ui->patient_label->setText(patient.c_str());
@@ -151,7 +156,10 @@ void MainWindow::on_pushButton_clicked()
 
     // read in the file that was pushed
     ifstream file("/home/pi/to_push.txt");
-    if (file){
+    if (!file){
+        cout << "Could not open or create file" << endl;
+     }else{
+     	// read in all of the contents
         getline(file,patient);
         getline(file,owner);
         getline(file,medications);
@@ -177,9 +185,11 @@ void MainWindow::on_pushButton_clicked()
             belongings = belongings+"Bed/Blanket, ";
         }
         if(atoi(carrier.c_str()) == 1){
-            belongings = belongings+"Carrier, ";
+            belongings = belongings+"Carrier";
         }
-        belongings.erase(belongings.end()-2);
+        if(belongings.length() > 2){
+            belongings.erase(belongings.end()-2);
+        }
     //cout << "File read in" << endl;
     //cout << "Popped" << endl;
 
