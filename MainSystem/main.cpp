@@ -7,13 +7,18 @@
 #include <QApplication>
 #include <vector>
 #include <windows.h>
+#include <string>
 
 vector<Dogs*> dog_vec(10); // vector that stores the dog objects
 vector<Cats*> cat_vec(10); // vector that stores the cat objects
 
+
 // This function checks to see if a folder exists
-// it uses some items specific to the windows kernel - windows.h file
+// it uses some items specific to the windows kernel - windows.h file include
 // gets passed the path to directory
+
+// this function was based off of a function written by FailedDev at:
+// http://stackoverflow.com/questions/8233842/how-to-check-if-directory-exist-using-c-and-winapi
 bool dirExists(const std::string& dirName_in)
 {
   DWORD ftyp = GetFileAttributesA(dirName_in.c_str());
@@ -26,6 +31,16 @@ bool dirExists(const std::string& dirName_in)
 
 int main(int argc, char *argv[])
 {
+    //cout << "in main" << endl;
+
+    // initialize each element in the vectors to null
+    for(int i=0;i<10;i++){
+        dog_vec[i] = NULL;
+    }
+    for(int i=0;i<10;i++){
+        cat_vec[i] = NULL;
+    }
+
     // This is for Qt to setup the application
     QApplication a(argc, argv);
     // Create a mainwindow object
@@ -48,18 +63,18 @@ int main(int argc, char *argv[])
         }
     }
 
-    // load all of the dogs into memory
+    // load all of the dog files into memory
     string x;
     char file_name[30];
     for(int i = 0;i<10;i++){
         sprintf(file_name,"Data/Dogs/dog_%d.txt",i+1);
-        Dogs *animal = new Dogs;
-        dog_vec[i] = animal;
+        Dogs *animal = new Dogs; // new dog object
+        dog_vec[i] = animal;    // puts that object into the vector
         ifstream file(file_name);
         if (!file){
             dog_vec[i] = NULL;
          }else{
-          // read in all of the patient information
+          // read in all of the patient information into the object
             getline(file,animal->patient);
             getline(file,animal->owner);
             getline(file,animal->medication);
@@ -85,16 +100,16 @@ int main(int argc, char *argv[])
         }
     }
 
-    // load all of the cats into memory
+    // load all of the cat files into memory
     for(int i = 0;i<10;i++){
         sprintf(file_name,"Data/Cats/cat_%d.txt",i+11);
-        Cats *animal = new Cats;
-        cat_vec[i] = animal;
+        Cats *animal = new Cats; // new Cat object
+        cat_vec[i] = animal;    // puts that object into the vector
         ifstream file(file_name);
         if (!file){
             cat_vec[i] = NULL;
          }else{
-          // read in all of the patient information
+          // read in all of the patient information into the object
             getline(file,animal->patient);
             getline(file,animal->owner);
             getline(file,animal->medication);

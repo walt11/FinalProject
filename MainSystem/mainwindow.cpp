@@ -65,7 +65,7 @@ void MainWindow::updateDisplay(){
           patient_in = pat;
           owner_in = ow;
           device_in = to_string(i);
-          //writes the info the the textbrowser on the main window
+          //writes the info to the textbrowser on the main window
           ui->cat_textbrowser->append(("("+device_in+")\t\t"+patient_in+"\t\t"+owner_in).c_str());
         }
 
@@ -159,4 +159,16 @@ void MainWindow::on_delete_patient_clicked()
     }
     // IMPORTANT - this only deletes the patients file, meaning that the patients object is still in the vector - this object is then handeled
     // when a new patient is being added by simply overwritting the previous patients information with the new patients info
+}
+
+// In Qt, there is a default virtual closeEvent() method that happens when the X button is clicked to close the program
+// so we wrote an override function to accept the "exit" signal so we can perform a few tasks before the program exits
+// Our method deletes the memory of the objects in the two vectors
+void MainWindow::closeEvent(QCloseEvent *event){
+    NewPatientWindow *n = new NewPatientWindow; // create new NewPatientWindow object
+                                                // in order to call the deleteVecs() method
+    n->deleteVecs(); // deletes the objects in the vectors
+    delete n;       // then deletes the NewPatientWindow object just created
+    cout << "Program exit" << endl;
+    event->accept(); // accept the exit event to tell Qt to exit the program
 }

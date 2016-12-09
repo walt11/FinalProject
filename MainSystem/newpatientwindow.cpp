@@ -15,6 +15,7 @@
 using namespace std;
 
 // NewPatientWindow Constructor for creating new patient
+// QWidget is a class specific to Qt for the NewPatient Window user interface
 NewPatientWindow::NewPatientWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::NewPatientWindow)
@@ -23,18 +24,22 @@ NewPatientWindow::NewPatientWindow(QWidget *parent) :
 }
 
 // NewPatientWindow Constructor for editing the information of a current patient
+// QWidget is a class specific to Qt for the NewPatient Window user interface
 NewPatientWindow::NewPatientWindow(QWidget *parent, QString device) : QWidget(parent),ui(new Ui::NewPatientWindow)
 {
-    cout << edit << endl;
-    edit = 1;
+    //cout << edit << endl;
+    edit = 1; // keeps track of if a patient is being edited rather than being added
     char file_name[30];
     ui->setupUi(this); // tell Qt to setup user interface
        ui->input_device->setText(device);                                   // set the device field
 
        if(atoi(device.toStdString().c_str()) < 11){ //is a dog
+           cout << "is dog" << endl;
            sprintf(file_name,"Data/Dogs/dog_%d.txt",atoi(device.toStdString().c_str()));
            FILE *f = fopen(file_name,"r");
-           if(f != NULL){
+           if(f != NULL){ // in order to push the edited patient, a file cannot exists
+                          // because loadNew_dog handles everything based on if a file for that
+                          // is present or not
                remove(file_name);
            }
            fclose(f);
@@ -76,13 +81,16 @@ NewPatientWindow::NewPatientWindow(QWidget *parent, QString device) : QWidget(pa
            //delete dog_vec[atoi(device.toStdString().c_str())-1];
            //dog_vec[atoi(device.toStdString().c_str())-1] = NULL;
        }
-       else{ // is a cat - only thing different than above is the vector used
+       else{ // *** is a cat - only thing different than above is the vector used ***
            sprintf(file_name,"Data/Dogs/dog_%d.txt",atoi(device.toStdString().c_str()));
            FILE *f = fopen(file_name,"r");
-           if(f != NULL){
+           if(f != NULL){ // in order to push the edited patient, a file cannot exists
+                          // because loadNew_cat handles everything based on if a file for that
+                          // is present or not
                remove(file_name);
+               fclose(f);
            }
-           fclose(f);
+
            if(cat_vec[atoi((device).toStdString().c_str())-11] == NULL){
                cout << "Device not found" << endl;
                return;
@@ -133,18 +141,21 @@ NewPatientWindow::~NewPatientWindow()
 int NewPatientWindow::pushInfo(string d,char *file_name){
 
     // make a copy of the patients file
-    std::ifstream infile (file_name,std::ifstream::binary);
-    std::ofstream outfile ("to_push.txt",std::ofstream::binary);
+    std::ifstream infile (file_name,std::ifstream::binary); // open patient file
+    std::ofstream outfile ("to_push.txt",std::ofstream::binary); // open the file that is pushed to the device
+
+    // get the length of the patient file
     infile.seekg (0,infile.end);
     long size = infile.tellg();
     infile.seekg (0);
-    char* buffer = new char[size];
-    infile.read (buffer,size);
-    outfile.write (buffer,size);
-    delete[] buffer;
-    outfile.close();
-    infile.close();
 
+    char* data = new char[size]; // stores file content
+    infile.read (data,size);    // reads in the patient file
+    outfile.write (data,size);  // writes to the file to be pushed
+    delete[] data; // deletes the data variable
+    outfile.close(); // close files
+    infile.close();
+    cout << "file copied" << endl;
     char *ip_address;
     // opens the file containing the ip addresses
     FILE *fp = fopen("Data/device_ips.txt","r");
@@ -171,7 +182,8 @@ int NewPatientWindow::pushInfo(string d,char *file_name){
             return -1;
         }
         //cout << ip_address << endl;
-    }else{
+
+    }else{ // otherwise the "device_ips.txt" file could not be found
         QMessageBox::information(this,"ERROR","Ip Address File not Found");
         return -1;
     }
@@ -200,15 +212,18 @@ int NewPatientWindow::pushInfo(string d,char *file_name){
 // method that runs when the Push button is clicked
 void NewPatientWindow::on_push_clicked()
 {
-
+     cout << "in push clicked" << endl;
     // checks to make sure the main fields are filled out
     try{
+         cout << "input empty" << endl;
         if(ui->input_patient->text().toStdString().empty()){
             throw(-1);
         }
+        cout << "owner empty" << endl;
         if(ui->input_owner->text().toStdString().empty()){
             throw(-1);
         }
+        cout << "treatment empty" << endl;
         if(ui->input_treatment->toPlainText().toStdString().empty()){
             throw(-1);
         }
@@ -218,7 +233,7 @@ void NewPatientWindow::on_push_clicked()
         return;
     }
 
-    // check to make sure that is dog is selected, a correct device number is entered (1 to 10), or if a cat is selected (11 to 20)
+    // check to make sure that when a dog is selected, a correct device number is entered (1 to 10), or if a cat is selected (11 to 20)
     char file_name[20];
     try{
        if(ui->input_dog->isChecked()){ // if dog
@@ -230,6 +245,7 @@ void NewPatientWindow::on_push_clicked()
             }
             sprintf(file_name,"Data/Dogs/dog_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
             writeDogToFile(file_name); // write dog to file
+            cout << "wrote dog to file" << endl;
 
         }else{ // if cat
 
@@ -238,10 +254,15 @@ void NewPatientWindow::on_push_clicked()
                 throw(devicenum); // throw error
 
          sprintf(file_name,"Data/Cats/cat_%d.txt",atoi(ui->input_device->text().toStdString().c_str()));
+         cout << " load cat" << endl;
          if(loadNew_cat() == -1){ //  load cat into vector
+             //cout << "cat loaded" << endl;
              return;
          }
+         cout << "write cat" << endl;
          writeCatToFile(file_name); // write cat to file
+         cout << "wrote cat" << endl;
+         cout << "Wrote cat to file" << endl;
         }
     }
     catch(int){
@@ -249,9 +270,11 @@ void NewPatientWindow::on_push_clicked()
             return;
     }
 
+    cout << "Trying to push" << endl;
     // tries to push the file to the device
     if(pushInfo(ui->input_device->text().toStdString(),file_name) == -1){
         QMessageBox::information(this,"ERROR","Error pushing to device.");
+        NewPatientWindow::close();
     }else{
         QMessageBox::information(this,"Complete","Info Pushed Successfully");
         NewPatientWindow::close();
@@ -322,9 +345,9 @@ int NewPatientWindow::loadNew_cat(){
         if (!ifile) {
             ifile.close();
             cout << "file not found but patient associated to device" << endl;
-            animal = cat_vec[atoi(ui->input_device->text().toStdString().c_str())-1];
+            animal = cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11];
         }else if(edit == 1){ // if the user is editing the patient, we still want to be able to push the edited patient without the error below being triggered
-            animal = cat_vec[atoi(ui->input_device->text().toStdString().c_str())-1];
+            animal = cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11];
             edit = 0;
         }else{
             QMessageBox::information(this,"ERROR","There is a patient in that kennel\nPlease choose another");
@@ -346,6 +369,18 @@ int NewPatientWindow::loadNew_cat(){
     animal->bed_blanket = ui->bed_blanket_checkbox->isChecked();            // bed/blanket
     animal->carrier = ui->carrier_checkbox->isChecked();                    // carrier
     return 0;
+}
+
+// This is used to delete the objects in the vectors when the program exits
+// It is in this file and not the mainwindow file because of scope issues between
+// MainWindow and the two vectors.
+void NewPatientWindow::deleteVecs(){
+    for(int i=0;i<10;i++){
+        if(dog_vec[i] != NULL)
+            delete dog_vec[i];
+        if(cat_vec[i] != NULL)
+            delete cat_vec[i];
+    }
 }
 
 // method to write dog to file
@@ -426,7 +461,7 @@ void NewPatientWindow::writeCatToFile(char *file_name){
     }else{
         fprintf(file,"0\n");
     }
-    if(dog_vec[atoi(ui->input_device->text().toStdString().c_str())-11]->carrier){
+    if(cat_vec[atoi(ui->input_device->text().toStdString().c_str())-11]->carrier){
         fprintf(file,"1\n");
     }else{
         fprintf(file,"0\n");
